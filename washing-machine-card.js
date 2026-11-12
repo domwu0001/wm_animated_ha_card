@@ -1492,7 +1492,7 @@ class WashingMachineCard extends HTMLElement {
           position: absolute; inset: 0; display: flex; flex-direction: column;
           align-items: center; justify-content: center; text-align: center;
         }
-        .ring-time { font-size: calc(var(--wm-font-scale, 1) * 19px); font-weight: 800; line-height: 1; }
+        .ring-time { font-size: calc(var(--wm-font-scale, 1) * 18px); font-weight: 800; line-height: 1; }
         .ring-label {
           font-size: calc(var(--wm-font-scale, 1) * 8px); font-weight: 700; letter-spacing: .8px; color: var(--wm-label);
           margin-top: 3px; max-width: 58px; overflow: hidden; white-space: nowrap;
