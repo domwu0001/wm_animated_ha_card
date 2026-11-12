@@ -1564,7 +1564,6 @@ class WashingMachineCard extends HTMLElement {
               </svg>
               <div class="ring-center">
                 <div class="ring-time" id="ringTime">—</div>
-                <div class="ring-label" id="ringLabel"></div>
               </div>
             </div>
             <div class="st-col">
@@ -1678,7 +1677,6 @@ class WashingMachineCard extends HTMLElement {
         this._el("dispDot").setAttribute("fill", running ? "#22b263" : "#4a5871");
         this._el("ringTime").textContent = active ? (liveClock || "…") : "—";
         const ringState = ["running", "idle", "paused", "standby"].includes(displayState) ? displayState : "off";
-        this._el("ringLabel").textContent = remainingClock !== null ? t.ring_remaining : t[`ring_${ringState}`];
         this._el("ringArc").style.display = active ? "" : "none";
         if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
