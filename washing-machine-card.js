@@ -204,6 +204,7 @@ class WashingMachineCard extends HTMLElement {
         appliance_type: "washer",
         language: "auto",
         theme: "auto",
+        card_background: "default",
         currency: "€",
         power_threshold: 10,
         power_max: 2500,
@@ -1252,6 +1253,12 @@ class WashingMachineCard extends HTMLElement {
         :host(.wm-native) ha-card {
           box-shadow: none;
         }
+        :host(.wm-ha-background) ha-card {
+          background: var(--ha-card-background, var(--card-background-color, var(--wm-grad)));
+        }
+        :host(.wm-transparent) ha-card {
+          background: transparent;
+        }
         ha-card {
           display: block;
           box-sizing: border-box;
@@ -1654,6 +1661,9 @@ class WashingMachineCard extends HTMLElement {
         const haIsDark = !!this._hass?.themes?.darkMode;
         this.classList.toggle("wm-native", isNative);
         this.classList.toggle("wm-native-dark", isNative && haIsDark);
+        const backgroundMode = String(c.card_background || "default").toLowerCase();
+        this.classList.toggle("wm-ha-background", backgroundMode === "ha");
+        this.classList.toggle("wm-transparent", backgroundMode === "transparent");
         const dark = !isNative && (themeCfg === "dark" || (themeCfg !== "light" && haIsDark));
         this.classList.toggle("wm-dark", dark);
         const running = this._isRunning();
@@ -2002,6 +2012,27 @@ class WashingMachineCardEditor extends HTMLElement {
                                         label: "Home Assistant (native colours)"
                                     },
                                 ],
+                            },
+                        },
+                    }, {
+                        key: "card_background",
+                        kind: "select",
+                        title: "Card background",
+                        required: true,
+                        default: D.card_background,
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [{
+                                    value: "default",
+                                    label: "Default blue gradient"
+                                }, {
+                                    value: "ha",
+                                    label: "Home Assistant card background"
+                                }, {
+                                    value: "transparent",
+                                    label: "Transparent"
+                                }],
                             },
                         },
                     }, {
