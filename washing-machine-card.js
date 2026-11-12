@@ -1286,6 +1286,13 @@ class WashingMachineCard extends HTMLElement {
           display: flex; align-items: center; justify-content: center;
         }
         .h-icon svg { width: 27px; height: 27px; }
+        .daily-counter {
+          display: inline-flex; align-items: center; flex-shrink: 0;
+          padding: 5px 9px; border-radius: 999px;
+          background: var(--wm-badge-bg); color: var(--wm-badge-fg);
+          font-size: calc(var(--wm-font-scale, 1) * 11px); font-weight: 700;
+          white-space: nowrap;
+        }
         .h-title {
           font-size: calc(var(--wm-font-scale, 1) * 17.5px); font-weight: 700; letter-spacing: .2px;
           flex: 0 1 auto; min-width: 56px;
@@ -1544,6 +1551,7 @@ class WashingMachineCard extends HTMLElement {
         <div class="wrap idle" id="wrap">
           <div class="header">
             <div class="h-icon" id="hIcon">${this._headerIcon()}</div>
+            <div class="daily-counter hidden" id="dailyCounter"></div>
             <div class="h-title" id="name"></div>
             <div class="badge"><span class="b-dot"></span><span id="badgeText"></span></div>
             <div class="h-spacer"></div>
@@ -1669,6 +1677,16 @@ class WashingMachineCard extends HTMLElement {
         const running = this._isRunning();
         wrap.classList.toggle("running", running);
         this._el("name").textContent = c.name || t.name;
+        const counterEntity = this._st(c.counter_entity);
+        const counterCondition = c.counter_condition_entity
+            ? this._st(c.counter_condition_entity)?.state === "on"
+            : true;
+        const counterValue = counterEntity ? Number(counterEntity.state) : NaN;
+        const showCounter = !!c.counter_entity && counterCondition &&
+            Number.isFinite(counterValue) && !["unknown", "unavailable"].includes(String(counterEntity.state).toLowerCase());
+        const counterEl = this._el("dailyCounter");
+        counterEl.classList.toggle("hidden", !showCounter);
+        counterEl.textContent = showCounter ? `${this._fmtNum(counterValue, 0)}× ${t.today}` : "";
         const status = this._st(c.status_entity);
         const noData = !status || ["unknown", "unavailable"].includes(status.state);
         const applianceState = noData ? "nodata" : this._applianceState();
@@ -2093,6 +2111,31 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "keywords",
                         title: "Running State keywords",
                         description: "Running State keywords determine when the card considers the appliance to be running. Built-in keywords for the selected language appear in blue. Add or remove keywords as needed.",
+                    },
+                ],
+            }, {
+                title: "Daily counter",
+                icon: "mdi:counter",
+                fields: [{
+                        key: "counter_entity",
+                        kind: "entity",
+                        title: "Daily cycle counter",
+                        description: "Entity containing the number of appliance cycles today (for example, a counter or input_number helper).",
+                        selector: {
+                            entity: {
+                                domain: ["counter", "input_number", "sensor"]
+                            }
+                        },
+                    }, {
+                        key: "counter_condition_entity",
+                        kind: "entity",
+                        title: "Display condition (input_boolean)",
+                        description: "Optional. The counter is displayed only while this input_boolean is on. Leave empty to always show the counter.",
+                        selector: {
+                            entity: {
+                                domain: "input_boolean"
+                            }
+                        },
                     },
                 ],
             }, {
